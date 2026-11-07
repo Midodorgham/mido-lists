@@ -99,6 +99,8 @@
     u = String(u || '').toLowerCase();
     if (/[?&](username|user)=[^&#]+/.test(u) && /[?&](password|pass)=[^&#]+/.test(u)) return true;
     if (/\/(live|movie|movies|series)\/[^\/?#]+\/[^\/?#]+\/\d+(\.[a-z0-9]+)?([?#]|$)/.test(u)) return true;
+    // الشكل المختصر للايف: http://server/user/pass/123
+    if (/^https?:\/\/[^\/?#]+\/[^\/?#]+\/[^\/?#]+\/\d+(\.[a-z0-9]+)?([?#]|$)/.test(u)) return true;
     return /\/timeshift\/[^\/?#]+\/[^\/?#]+\//.test(u);
   }
 

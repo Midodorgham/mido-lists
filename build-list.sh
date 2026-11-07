@@ -24,7 +24,7 @@ DEFAULT_SOURCES=(
 )
 
 # لينك اشتراك؟ (يوزر وباسورد جوه اللينك، زي لوحات Xtream)
-CRED_ERE='/(live|movie|movies|series)/[^/?#]+/[^/?#]+/[0-9]+(\.[a-z0-9]+)?([?#]|$)|/timeshift/[^/?#]+/[^/?#]+/'
+CRED_ERE='^https?://[^/?#]+/[^/?#]+/[^/?#]+/[0-9]+(\.[a-z0-9]+)?([?#]|$)|/(live|movie|movies|series)/[^/?#]+/[^/?#]+/[0-9]+(\.[a-z0-9]+)?([?#]|$)|/timeshift/[^/?#]+/[^/?#]+/'
 is_cred() {
   local u="${1,,}"
   if grep -Eq '[?&](username|user)=[^&#]+' <<<"$u" && grep -Eq '[?&](password|pass)=[^&#]+' <<<"$u"; then return 0; fi
@@ -92,6 +92,7 @@ awk -v stats="$STATS" '
     u = tolower(u)
     if (u ~ /[?&](username|user)=[^&#]+/ && u ~ /[?&](password|pass)=[^&#]+/) return 1
     if (u ~ /\/(live|movie|movies|series)\/[^\/?#]+\/[^\/?#]+\/[0-9]+(\.[a-z0-9]+)?([?#]|$)/) return 1
+    if (u ~ /^https?:\/\/[^\/?#]+\/[^\/?#]+\/[^\/?#]+\/[0-9]+(\.[a-z0-9]+)?([?#]|$)/) return 1
     if (u ~ /\/timeshift\/[^\/?#]+\/[^\/?#]+\//) return 1
     return 0
   }
