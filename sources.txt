@@ -6,3 +6,9 @@ https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_zz_news
 https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_zz_documentaries_ar.m3u8
 https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_saudi_arabia.m3u8
 https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_united_arab_emirates.m3u8
+https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_qatar.m3u8
+https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_lebanon.m3u8
+https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_iraq.m3u8
+https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_zz_movies.m3u8
+https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_zz_documentaries_en.m3u8
+https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_zz_news_en.m3u8
