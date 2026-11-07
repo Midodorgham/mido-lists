@@ -665,18 +665,52 @@
     readFile(f).then(function (buf) {
       input.value = '';
       var text = normNL(decode(buf)), all = entries(parseM3U(text));
-      if (!all.length) { msg('#up-err', 'الملف ده مش قايمة M3U (مفيهوش ولا قناة أو فيلم).'); return; }
-      var good = all.filter(function (b) { return !isCred(b.url); }), bad = all.length - good.length;
-      if (!good.length) { msg('#up-err', CRED_FILE_MSG); return; }
-      var first = text.split('\n')[0].trim();
-      var out = [/^#EXTM3U/i.test(first) ? first : '#EXTM3U'].concat(good.map(function (b) {
-        return b.lines.map(function (l) { return l.trim(); }).filter(Boolean).join('\n');
-      })).join('\n') + '\n';
-      var c = kindCounts(good);
-      S.upload = { text: out };
-      $('#up-sum').textContent = 'الملف فيه ' + num(good.length) + ': ' + [c.live ? '🔴 لايف ' + num(c.live) : '', c.movie ? '🎬 أفلام ' + num(c.movie) : '',
-        c.series ? '📺 مسلسلات ' + num(c.series) : ''].filter(Boolean).join(' · ');
-      msg('#up-warn', bad ? '🚫 شلنا ' + num(bad) + ' لينك اشتراك (فيهم يوزر وباسورد): الـ repo عام وأي حد يقدر يشوفه، ومينفعش تعيد توزيع اشتراك إنت مشترك فيه.' : '');
+      if (!all.length) { msg('#up-err', 'الملف ده مش قايمة M3U (مفيهوش ولا قناة أو فيلم).'); return; }     
+var good = all.filter(function (b) {
+  return !isCred(b.url);
+});
+
+var bad = all.length - good.length;
+
+if (!good.length) {
+  msg('#up-err',
+    'الملف فيه ' + num(all.length) +
+    ' قناة، لكن كل روابطها تحتوي على بيانات اشتراك. ' +
+    'مش ممكن نشرها بأمان في مستودع GitHub عام.'
+  );
+  return;
+}
+
+var first = text.split('\n')[0].trim();
+
+var out = [
+  /^#EXTM3U/i.test(first) ? first : '#EXTM3U'
+].concat(good.map(function (b) {
+  return b.lines
+    .map(function (l) { return l.trim(); })
+    .filter(Boolean)
+    .join('\n');
+})).join('\n') + '\n';
+
+var c = kindCounts(good);
+
+S.upload = { text: out };
+
+$('#up-sum').textContent =
+  'الملف فيه ' + num(good.length) + ' قناة صالحة للنشر: ' +
+  [
+    c.live ? '🔴 لايف ' + num(c.live) : '',
+    c.movie ? '🎬 أفلام ' + num(c.movie) : '',
+    c.series ? '📺 مسلسلات ' + num(c.series) : ''
+  ].filter(Boolean).join(' · ');
+
+msg('#up-warn', bad
+  ? '⚠️ تم استبعاد ' + num(bad) +
+    ' رابط يحتوي على بيانات اشتراك. ' +
+    'باقي القنوات جاهزة للرفع.'
+  : '✅ كل الروابط اجتازت الفحص.'
+);
+
       $('#up-name').value = cleanName(f.name) || ('list-' + new Date().toISOString().slice(0, 10));
       show('#up-box', true);
     }, function () { input.value = ''; msg('#up-err', 'مش قادرين نقرا الملف ده.'); });
