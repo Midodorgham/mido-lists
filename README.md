@@ -33,4 +33,6 @@ https://raw.githubusercontent.com/Midodorgham/mido-lists/main/mido.m3u
 
 ## سيرفر العملاء (يوزر وباسورد لكل عميل)
 
-في فولدر [`server/`](server/README.md): سيرفر صغير بتركّبه على VPS، وفيه لوحة تعمل منها حساب لكل عميل بمدة.
+- **ببلاش على Supabase:** الخطوات في [`supabase/`](supabase/README.md). وبتدير العملاء من
+  https://midodorgham.github.io/mido-lists/customers.html
+- **أو على VPS بتاعك:** في [`server/`](server/README.md).

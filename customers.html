@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07060f">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src https://*.supabase.co; img-src 'self' https: data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>عملاء MIDO</title>
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="customers.css?v=1">
+</head>
+<body>
+<div id="login" class="screen" hidden>
+  <form class="card login" id="loginForm">
+    <img src="icon.png" alt="" class="logo">
+    <h1>عملاء MIDO</h1>
+    <p class="muted">أول مرة بس: الصق لينك السيرفر من Supabase، واكتب الباسورد اللي حطيته في ADMIN_PASSWORD.</p>
+    <input type="url" id="srvUrl" dir="ltr" placeholder="https://….supabase.co/functions/v1/mido" autocomplete="url" autocapitalize="off" spellcheck="false" required>
+    <input type="password" id="adminPass" placeholder="باسورد اللوحة" autocomplete="current-password" required>
+    <p class="muted"><a href="./">← لوحة MIDO (القنوات والأفلام)</a></p>
+    <button class="btn primary" type="submit">دخول</button>
+    <p class="err" id="loginErr"></p>
+  </form>
+</div>
+
+<div id="app" class="screen" hidden>
+  <header class="top">
+    <div class="brand"><img src="icon.png" alt="" class="logo sm"><div><h1>عملاء MIDO</h1><span class="muted" id="listInfo">…</span></div></div>
+    <div class="top-actions">
+      <button class="btn ghost" id="refreshBtn" title="يجيب آخر نسخة من قايمتك">🔄 تحديث القايمة</button>
+      <a class="btn ghost" href="./">📺 القنوات</a>
+      <button class="btn ghost" id="logoutBtn">خروج</button>
+    </div>
+  </header>
+
+  <section class="card serverbox">
+    <div>
+      <div class="label">عنوان السيرفر اللي العميل بيكتبه في التطبيق</div>
+      <div class="mono big" id="serverUrl">…</div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><h2>عميل جديد</h2></div>
+    <form id="addForm" class="grid">
+      <label>الاسم<input name="name" placeholder="مثلاً: أحمد محمد" maxlength="80"></label>
+      <label>الموبايل<input name="phone" inputmode="tel" placeholder="اختياري" maxlength="30"></label>
+      <label>اليوزر<input name="username" dir="ltr" placeholder="لو سبته فاضي بيتعمل لوحده" maxlength="32" autocapitalize="off" autocomplete="off" spellcheck="false"></label>
+      <label>الباسورد<div class="row"><input name="password" dir="ltr" maxlength="32" autocapitalize="off" autocomplete="off" spellcheck="false"><button type="button" class="btn ghost sm" id="genPass" title="باسورد جديد">🎲</button></div></label>
+      <label>المدة<select name="duration">
+        <option value="1d">تجربة يوم</option>
+        <option value="30d" selected>شهر</option>
+        <option value="90d">٣ شهور</option>
+        <option value="180d">٦ شهور</option>
+        <option value="365d">سنة</option>
+        <option value="none">من غير ما يخلص</option>
+      </select></label>
+      <label>ملاحظة<input name="note" placeholder="اختياري" maxlength="300"></label>
+      <button class="btn primary wide" type="submit">➕ اعمل الحساب</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="sec-head">
+      <h2>العملاء</h2>
+      <input id="search" class="search" type="search" placeholder="دوّر بالاسم أو اليوزر أو الموبايل">
+    </div>
+    <div class="chips" id="filters">
+      <button class="chip on" data-f="all">الكل</button>
+      <button class="chip" data-f="Active">شغالين</button>
+      <button class="chip" data-f="soon">بيخلصوا قريب</button>
+      <button class="chip" data-f="Expired">خلصوا</button>
+      <button class="chip" data-f="Disabled">موقوفين</button>
+    </div>
+    <div id="list" class="list"></div>
+  </section>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="dlgForm" class="dlg">
+    <h2 id="dlgTitle">تعديل</h2>
+    <div class="grid" id="dlgBody"></div>
+    <div class="dlg-actions">
+      <button class="btn primary" value="ok" id="dlgOk">حفظ</button>
+      <button class="btn ghost" value="cancel" formnovalidate>إلغاء</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status"></div>
+<script src="customers.js?v=1"></script>
+</body>
+</html>
