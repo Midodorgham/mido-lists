@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src https://api.github.com; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07021A">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-title" content="لوحة MIDO">
+<title>لوحة MIDO</title>
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+<style>
+:root{
+  --pink:#FF2BD6; --cyan:#00F0FF; --purple:#8A2BFF;
+  --bg:#07021A; --bg2:#16053A; --card:rgba(255,255,255,.055); --cardb:rgba(255,255,255,.12);
+  --txt:#F3ECFF; --dim:#A99FC7; --ok:#3DFFA8; --bad:#FF5C7A; --warn:#FFC857;
+  --field:rgba(0,0,0,.34); --r:18px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  margin:0; min-height:100vh; color:var(--txt); background-color:var(--bg);
+  background-image:
+    radial-gradient(900px 520px at 100% -10%, rgba(138,43,255,.36), transparent 62%),
+    radial-gradient(760px 460px at -15% 105%, rgba(255,43,214,.20), transparent 60%);
+  background-repeat:no-repeat;
+  font:16px/1.65 "Cairo", -apple-system, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 28px);
+}
+a{color:var(--cyan)}
+code{font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size:.92em}
+[hidden]{display:none !important}
+.wrap{max-width:760px; margin:0 auto; padding:0 16px}
+
+/* الهيدر */
+.top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 0 6px}
+.brand{display:flex; align-items:baseline; gap:10px; min-width:0}
+.logo{
+  direction:ltr; unicode-bidi:isolate; font-weight:800; font-size:30px; letter-spacing:.09em; line-height:1;
+  background:linear-gradient(90deg, var(--cyan), var(--pink) 55%, var(--purple));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 0 10px rgba(255,43,214,.55));
+}
+.brand .sub{color:var(--dim); font-weight:700; white-space:nowrap}
+.who{display:flex; align-items:center; gap:8px; font-size:14px; color:var(--dim); min-width:0}
+.who span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; direction:ltr}
+.linkbtn{appearance:none; border:0; background:none; color:var(--pink); font:inherit; font-weight:700; padding:6px; cursor:pointer}
+
+/* التنقل */
+.nav{position:sticky; top:0; z-index:5; display:flex; gap:8px; overflow-x:auto; padding:10px 16px; margin:0 -16px;
+  background:linear-gradient(var(--bg) 72%, rgba(7,2,26,0)); scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none; text-decoration:none; color:var(--txt); font-weight:700; font-size:14px; padding:7px 14px; border-radius:999px;
+  background:var(--card); border:1px solid var(--cardb); white-space:nowrap}
+.nav a:active{background:rgba(0,240,255,.15)}
+
+/* الكروت */
+.card{background:var(--card); border:1px solid var(--cardb); border-radius:var(--r); padding:18px; margin:14px 0;
+  box-shadow:0 10px 40px rgba(0,0,0,.25); scroll-margin-top:64px}
+.card h2{margin:0 0 10px; font-size:19px; font-weight:800; line-height:1.4}
+.card h3{margin:16px 0 8px; font-size:15px; color:var(--dim); font-weight:700}
+.count{display:inline-block; min-width:26px; padding:0 8px; margin-inline-start:4px; border-radius:999px; font-size:13px;
+  background:rgba(255,43,214,.18); color:var(--txt); text-align:center; vertical-align:middle}
+.hint{color:var(--dim); font-size:14px; margin:6px 0 12px}
+.note{color:var(--dim); font-size:13.5px; margin:14px 0 0; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,.22)}
+.err{color:var(--bad); font-weight:700; font-size:14.5px; margin:10px 0 0}
+.warn{color:var(--warn); font-size:14px; margin:8px 0 0}
+.empty{color:var(--dim); text-align:center; padding:14px 6px; margin:6px 0 0}
+.steps{margin:6px 0 14px; padding-inline-start:22px}
+.steps li{margin:6px 0}
+.row{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+
+/* الأزرار */
+.btn{appearance:none; border:0; border-radius:14px; padding:11px 18px; min-height:46px; font:inherit; font-weight:800; cursor:pointer;
+  color:#12022E; background:linear-gradient(135deg, var(--cyan), var(--pink)); box-shadow:0 0 18px rgba(255,43,214,.32);
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; text-align:center}
+.btn.ghost{background:transparent; color:var(--txt); border:1px solid var(--cardb); box-shadow:none; font-weight:700}
+.btn.small{padding:7px 13px; min-height:38px; font-size:14px; border-radius:12px}
+.btn:disabled,.btn[aria-disabled="true"]{opacity:.45; cursor:default; pointer-events:none}
+.btn.busy{pointer-events:none; opacity:.8}
+.btn.busy::after{content:""; width:16px; height:16px; border-radius:50%; border:2px solid currentColor; border-top-color:transparent; animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.mini{appearance:none; border:1px solid var(--cardb); background:transparent; color:var(--txt); font:inherit; font-size:13px; font-weight:700;
+  border-radius:10px; padding:4px 10px; min-height:32px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:4px}
+.mini.danger{color:#FFB3C1; border-color:rgba(255,92,122,.35)}
+.mini.busy{opacity:.6; pointer-events:none}
+
+/* الخانات */
+.fld{display:block; margin:12px 0 0}
+.fld > span{display:block; font-size:14px; font-weight:700; color:var(--dim); margin-bottom:6px}
+.fld small{font-weight:400}
+input[type=text],input[type=url],input[type=password],input[type=search]{
+  width:100%; padding:11px 14px; border-radius:12px; border:1px solid var(--cardb); background:var(--field); color:var(--txt);
+  font:inherit; font-size:16px; outline:none; -webkit-appearance:none; appearance:none}
+input::placeholder{color:rgba(169,159,199,.65)}
+input:focus{border-color:var(--cyan); box-shadow:0 0 0 3px rgba(0,240,255,.18)}
+input[dir=ltr]{text-align:left}
+.seg{display:flex; gap:8px; flex-wrap:wrap}
+.seg button{flex:1 1 0; min-width:92px; appearance:none; border:1px solid var(--cardb); background:var(--field); color:var(--txt);
+  font:inherit; font-weight:800; padding:10px 8px; border-radius:12px; cursor:pointer; min-height:46px}
+.seg button[aria-pressed="true"]{background:linear-gradient(135deg, rgba(0,240,255,.22), rgba(255,43,214,.28)); border-color:var(--pink);
+  box-shadow:0 0 14px rgba(255,43,214,.3)}
+.preview{display:flex; align-items:center; gap:12px; margin-top:12px; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,.22);
+  font-size:14px; color:var(--dim); min-height:48px}
+.preview img{width:44px; height:62px; object-fit:cover; border-radius:8px; flex:none; background:var(--bg2)}
+.preview b{color:var(--txt)}
+
+/* لينك الأجهزة */
+.linkbox{display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:10px 12px; border-radius:12px; background:var(--field);
+  border:1px dashed rgba(0,240,255,.45)}
+.linkbox code{flex:1 1 220px; min-width:0; direction:ltr; text-align:left; word-break:break-all; color:var(--cyan); font-size:13.5px}
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+.chip{padding:5px 12px; border-radius:999px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); font-size:14px; font-weight:700}
+.chip.dim{color:var(--dim); font-weight:400}
+.chip.warn{color:var(--warn); border-color:rgba(255,200,87,.35)}
+.pub{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:12px; font-size:14.5px}
+.dot{width:10px; height:10px; border-radius:50%; flex:none; background:var(--dim)}
+.dot.ok{background:var(--ok); box-shadow:0 0 10px var(--ok)}
+.dot.bad{background:var(--bad); box-shadow:0 0 10px var(--bad)}
+.dot.busy{background:var(--warn); box-shadow:0 0 10px var(--warn); animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+
+/* القوايم */
+.items{list-style:none; margin:12px 0 0; padding:0; display:grid; grid-template-columns:minmax(0,1fr); gap:10px}
+.item{display:flex; gap:12px; align-items:flex-start; min-width:0; padding:10px; border-radius:14px; background:rgba(0,0,0,.24); border:1px solid rgba(255,255,255,.07)}
+.thumb{position:relative; width:52px; height:52px; flex:none; border-radius:10px; background:var(--bg2); display:grid; place-items:center;
+  font-size:24px; overflow:hidden}
+.thumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.meta{flex:1; min-width:0}
+.meta b{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15.5px}
+.meta small{display:block; color:var(--dim); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.url{display:block; direction:ltr; text-align:left; font-size:12px; color:rgba(169,159,199,.8); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.acts{display:flex; flex-wrap:wrap; gap:6px; margin-top:7px}
+.more{color:var(--dim); font-size:13.5px; text-align:center; margin:10px 0 0}
+.search{margin-top:6px}
+
+/* رفع الملفات */
+.drop{display:flex; align-items:center; justify-content:center; gap:10px; padding:18px; border-radius:14px; border:1.5px dashed rgba(255,43,214,.55);
+  background:rgba(255,43,214,.06); font-weight:800; cursor:pointer; text-align:center; position:relative}
+.drop input{position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer; font-size:0}
+.drop:focus-within{box-shadow:0 0 0 3px rgba(0,240,255,.25)}
+.upbox{margin-top:12px; padding:12px; border-radius:14px; background:rgba(0,0,0,.24); border:1px solid rgba(255,255,255,.08)}
+.upbox p{margin:0 0 6px}
+
+/* القوايم الأونلاين */
+.toggles{display:flex; flex-wrap:wrap; gap:8px}
+.tg{appearance:none; border:1px solid var(--cardb); background:transparent; color:var(--txt); font:inherit; font-size:14.5px; font-weight:700;
+  border-radius:999px; padding:7px 14px; cursor:pointer; min-height:40px}
+.tg[aria-pressed="true"]{background:rgba(0,240,255,.13); border-color:var(--cyan); box-shadow:0 0 12px rgba(0,240,255,.22)}
+.tg[aria-pressed="true"]::before{content:"✓ "; color:var(--cyan)}
+.tg small{color:var(--dim); font-weight:400}
+.save-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:16px}
+.save-row span{color:var(--warn); font-size:14px}
+
+/* الروابط */
+.links{display:grid; gap:10px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr))}
+.links a{display:flex; gap:12px; align-items:center; padding:12px; border-radius:14px; text-decoration:none; color:var(--txt);
+  background:rgba(0,0,0,.24); border:1px solid rgba(255,255,255,.08)}
+.links a:active{border-color:var(--pink)}
+.links .ic{font-size:24px; flex:none}
+.links b{display:block; font-size:15px}
+.links small{display:block; color:var(--dim); font-size:12.5px; line-height:1.4}
+.foot{color:var(--dim); font-size:13px; text-align:center; margin:22px 0 0}
+.loading{text-align:center; color:var(--dim); padding:40px 0}
+.loading::before{content:""; display:block; width:28px; height:28px; margin:0 auto 12px; border-radius:50%; border:3px solid var(--pink);
+  border-top-color:transparent; animation:spin .8s linear infinite}
+
+/* رسالة صغيرة تحت */
+.toast{position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 18px); transform:translate(-50%, 140%); z-index:20;
+  width:max-content; max-width:min(92vw, 520px); padding:12px 18px; border-radius:14px; background:rgba(22,5,58,.97);
+  border:1px solid var(--cardb); box-shadow:0 12px 40px rgba(0,0,0,.5); font-weight:700; font-size:15px; text-align:center;
+  visibility:hidden; transition:transform .25s ease, visibility 0s linear .25s}
+.toast.show{transform:translate(-50%, 0); visibility:visible; transition:transform .25s ease}
+.toast.bad{border-color:rgba(255,92,122,.6)}
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+@media (max-width:420px){ .card{padding:15px} .logo{font-size:26px} .brand .sub{font-size:14px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="logo">MIDO</span><span class="sub">لوحة التحكم</span></div>
+    <div class="who" id="who" hidden><span id="who-name"></span><button type="button" class="linkbtn" id="logout">خروج</button></div>
+  </header>
+
+  <main>
+    <p class="loading" id="loading">بنفتح القايمة…</p>
+
+    <!-- أول مرة: المفتاح -->
+    <section class="card" id="setup" hidden>
+      <h2>🔑 أول مرة بس: اربط الصفحة بحسابك على GitHub</h2>
+      <p class="hint">الصفحة دي بتعدّل ملفات قايمتك على GitHub، فمحتاجة «مفتاح» مرة واحدة على الجهاز ده:</p>
+      <ol class="steps">
+        <li>دوس <b>«اعمل مفتاح»</b> تحت، هيفتحلك GitHub (سجّل دخول لو طلب).</li>
+        <li>في خانة <b dir="ltr">Expiration</b> اختار مدة (مثلًا <span dir="ltr">90 days</span>)، وانزل لآخر الصفحة ودوس <b dir="ltr">Generate token</b>.</li>
+        <li>انسخ المفتاح اللي ظهر (بيبدأ بـ <code dir="ltr">ghp_</code>) وارجع هنا حطه ودوس <b>«دخول»</b>.</li>
+      </ol>
+      <a class="btn ghost" id="mk-token" target="_blank" rel="noopener noreferrer">🔑 اعمل مفتاح</a>
+      <label class="fld"><span>المفتاح</span>
+        <input type="password" id="tok" dir="ltr" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ghp_…">
+      </label>
+      <div class="row"><button type="button" class="btn" id="tok-save">دخول</button></div>
+      <p class="err" id="tok-err" role="alert" hidden></p>
+      <p class="note">🔒 المفتاح بيتحفظ على الجهاز ده بس، ومابيتبعتش غير لـ GitHub. ماتبعتهوش لأي حد (ولا حتى في الشات). لو فتحت الصفحة من جهاز أو متصفح تاني، اعمل مفتاح جديد بنفس الطريقة.</p>
+    </section>
+
+    <!-- مشكلة في الاتصال -->
+    <section class="card" id="offline" hidden>
+      <h2>📶 مش قادرين نوصل لـ GitHub</h2>
+      <p class="hint" id="offline-msg">اتأكد إن النت شغال وجرّب تاني.</p>
+      <button type="button" class="btn" id="retry">جرّب تاني</button>
+    </section>
+
+    <div id="main" hidden>
+      <nav class="nav" aria-label="أقسام الصفحة">
+        <a href="#sec-add">➕ إضافة</a>
+        <a href="#sec-mine">🎬 اللي ضفته</a>
+        <a href="#sec-files">📁 ملفات M3U</a>
+        <a href="#sec-online">🌐 قوايم أونلاين</a>
+        <a href="#sec-links">🔗 روابط</a>
+      </nav>
+
+      <section class="card" id="sec-status">
+        <h2>📡 لينك القايمة</h2>
+        <div class="linkbox">
+          <code id="dev-link"></code>
+          <button type="button" class="btn small" id="copy-link">نسخ</button>
+          <button type="button" class="btn small ghost" id="share-link" hidden>مشاركة</button>
+        </div>
+        <p class="hint">ده اللينك اللي بتحطه في تطبيق MIDO: اختار M3U وإنت بتسجّل دخول وحط اللينك ده. أي تغيير بتعمله هنا بيوصل لكل الأجهزة خلال حوالي ٥ دقايق، لما التطبيق يتفتح أو تدوس «تحديث».</p>
+        <div class="chips" id="stats"></div>
+        <div class="pub" id="pub"></div>
+        <div class="row"><button type="button" class="btn small ghost" id="refresh">🔄 تحديث الصفحة</button></div>
+      </section>
+
+      <section class="card" id="sec-add">
+        <h2 id="add-title">➕ ضيف فيلم أو قناة</h2>
+        <div class="seg" role="group" aria-label="النوع" id="kinds">
+          <button type="button" data-kind="movie" aria-pressed="true">🎬 فيلم</button>
+          <button type="button" data-kind="series" aria-pressed="false">📺 مسلسل</button>
+          <button type="button" data-kind="live" aria-pressed="false">🔴 قناة</button>
+        </div>
+        <label class="fld"><span>الاسم</span><input type="text" id="f-name" autocomplete="off" maxlength="150"></label>
+        <label class="fld"><span>لينك الفيديو <small>(mp4 أو m3u8)</small></span>
+          <input type="url" id="f-url" dir="ltr" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https://…/movie.mp4">
+        </label>
+        <label class="fld"><span>القسم <small>(اختياري)</small></span>
+          <input type="text" id="f-group" list="groups" autocomplete="off" maxlength="80" placeholder="مثلًا: أكشن، كوميدي، رمضان">
+          <datalist id="groups"></datalist>
+        </label>
+        <label class="fld"><span>صورة البوستر <small>(اختياري: لينك صورة)</small></span>
+          <input type="url" id="f-logo" dir="ltr" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https://…/poster.jpg">
+        </label>
+        <div class="preview"><img id="f-img" alt="" referrerpolicy="no-referrer" hidden><span id="f-where"></span></div>
+        <p class="err" id="f-err" role="alert" hidden></p>
+        <div class="row">
+          <button type="button" class="btn" id="f-save">💾 حفظ</button>
+          <a class="btn ghost" id="f-test" target="_blank" rel="noopener noreferrer" aria-disabled="true">▶️ جرّب اللينك</a>
+          <button type="button" class="btn ghost" id="f-cancel" hidden>إلغاء التعديل</button>
+        </div>
+        <p class="note">حط بس أفلام وقنوات ليك حق تعرضها: ملكية عامة، أو بتاعتك، أو مرخّصة.</p>
+      </section>
+
+      <section class="card" id="sec-mine">
+        <h2>🎬 اللي ضفته <span class="count" id="mine-count">٠</span></h2>
+        <input type="search" class="search" id="mine-q" placeholder="🔎 دوّر بالاسم أو القسم" autocomplete="off" hidden>
+        <ul class="items" id="mine"></ul>
+        <p class="more" id="mine-more" hidden></p>
+        <p class="empty" id="mine-empty" hidden>لسه ماضفتش حاجة. ضيف أول فيلم من فوق ☝️</p>
+        <p class="err" id="mine-err" hidden></p>
+      </section>
+
+      <section class="card" id="sec-files">
+        <h2>📁 ملفات M3U <span class="count" id="files-count">٠</span></h2>
+        <p class="hint">ارفع ملف M3U (من الموبايل أو الكمبيوتر) وكل اللي فيه هيتضاف للينك. ملفات الاشتراكات اللي فيها يوزر وباسورد مش بتترفع.</p>
+        <label class="drop"><span>📤 اختار ملف M3U</span>
+          <input type="file" id="up-file" accept=".m3u,.m3u8,.txt,audio/x-mpegurl,audio/mpegurl,application/x-mpegurl,application/vnd.apple.mpegurl,text/plain">
+        </label>
+        <p class="err" id="up-err" role="alert" hidden></p>
+        <div class="upbox" id="up-box" hidden>
+          <p id="up-sum"></p>
+          <p class="warn" id="up-warn" hidden></p>
+          <label class="fld"><span>اسم الملف</span><input type="text" id="up-name" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="60"></label>
+          <div class="row"><button type="button" class="btn" id="up-go">⬆️ رفع</button><button type="button" class="btn ghost" id="up-cancel">إلغاء</button></div>
+        </div>
+        <ul class="items" id="files"></ul>
+        <p class="empty" id="files-empty" hidden>مفيش ملفات مرفوعة لسه.</p>
+        <p class="err" id="files-err" hidden></p>
+      </section>
+
+      <section class="card" id="sec-online">
+        <h2>🌐 قوايم أونلاين بتتحدّث لوحدها</h2>
+        <p class="hint">دي لينكات قوايم بتتنزل من جديد كل يوم الساعة ٥ الصبح، فلو قناة غيّرت لينكها بيتصلّح لوحده. اختار اللي عايزه ودوس «حفظ القوايم».</p>
+        <h3>قنوات مجانية رسمية (Free-TV)</h3>
+        <div class="toggles" id="presets"></div>
+        <h3>لينك قايمة تانية</h3>
+        <div class="row" style="margin-top:0">
+          <input type="url" id="src-url" dir="ltr" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https://…/playlist.m3u8" style="flex:1 1 220px">
+          <button type="button" class="btn small" id="src-add">إضافة</button>
+        </div>
+        <p class="err" id="src-err" role="alert" hidden></p>
+        <ul class="items" id="custom"></ul>
+        <div class="save-row"><button type="button" class="btn" id="src-save" disabled>💾 حفظ القوايم</button><span id="src-state"></span></div>
+        <p class="err" id="online-err" hidden></p>
+      </section>
+    </div>
+
+    <section class="card" id="sec-links">
+      <h2>🔗 روابط مهمة</h2>
+      <div class="links" id="links"></div>
+    </section>
+    <p class="foot">حط بس محتوى ليك حق تعرضه: قنوات مجانية رسمية، أو محتوى بتاعك، أو مرخّص.</p>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="admin.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+name: Build MIDO list
+
+on:
+  push:
+    branches: [ main, master ]
+    paths: [ 'my-list.m3u', 'lists/**', 'sources.txt', 'build-list.sh', '.github/workflows/build.yml' ]
+  schedule:
+    - cron: '0 3 * * *'      # كل يوم الساعة ٥ الصبح بتوقيت مصر: يجدد لينكات القوايم الأونلاين
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-list
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}   # آخر نسخة من الفرع، مش النسخة اللي شغّلت التشغيل ده
+      - name: Merge my list + uploaded files + online lists
+        run: bash build-list.sh
+      - name: Save the new list
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          B="$GITHUB_REF_NAME"
+          for i in 1 2 3; do
+            mkdir -p .cache
+            git add -A mido.m3u build-info.json .cache
+            if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+            git commit -q -m "Update mido.m3u"
+            if git push -q origin "HEAD:$B"; then echo "Saved"; exit 0; fi
+            echo "The branch moved while building; rebuilding on the latest version"
+            sleep $((i * 3))
+            git fetch -q origin "$B"
+            git reset -q --hard "origin/$B"
+            bash build-list.sh
+          done
+          exit 1
